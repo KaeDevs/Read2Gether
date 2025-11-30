@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Read2Gether | Sync Your Reading</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -354,14 +353,14 @@
             <h2 class="font-display font-bold text-5xl md:text-6xl mb-6 tracking-tight">Ready to sync up?</h2>
             <p class="text-zinc-400 mb-10 text-lg">Join the early-access waitlist. We're onboarding 100 new groups every week.</p>
             
-            <form id="waitlist-form" class="flex flex-col sm:flex-row gap-2 max-w-md mx-auto p-2 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm shadow-2xl" onsubmit="submitWaitlist(event)">
-                <input id="waitlist-email" type="email" placeholder="name@email.com" required 
+            <form class="flex flex-col sm:flex-row gap-2 max-w-md mx-auto p-2 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-sm shadow-2xl" onsubmit="event.preventDefault(); alert('You are on the list!');">
+                <input type="email" placeholder="name@email.com" required 
                     class="flex-1 bg-transparent border-none text-white px-4 py-3 focus:ring-0 placeholder-zinc-500 outline-none">
-                <button id="waitlist-submit" type="submit" class="bg-white text黑 font-bold px-6 py-3 rounded-xl hover:bg-zinc-200 transition-colors shadow-lg active:scale-95 duration-100">
+                <button type="submit" class="bg-white text-black font-bold px-6 py-3 rounded-xl hover:bg-zinc-200 transition-colors shadow-lg active:scale-95 duration-100">
                     Join Waitlist
                 </button>
             </form>
-            <p id="waitlist-message" class="mt-4 text-xs text-zinc-600">No spam. Unsubscribe anytime.</p>
+            <p class="mt-4 text-xs text-zinc-600">No spam. Unsubscribe anytime.</p>
         </div>
     </section>
 
@@ -443,55 +442,6 @@
                 nav.classList.add("nav-visible");
             }
             lastScrollY = currentScrollY;
-        }
-
-        // --- 3. WAITLIST SUBMISSION TO GOOGLE SHEETS (Apps Script via Cloudflare Pages Function) ---
-        // Cloudflare Pages Function at /api/submit adds CORS headers for GitHub Pages
-        const WAITLIST_ENDPOINT = "https://e8666706.read2gether.pages.dev/api/submit";
-
-        async function submitWaitlist(event) {
-            event.preventDefault();
-            const emailInput = document.getElementById("waitlist-email");
-            const submitBtn = document.getElementById("waitlist-submit");
-            const messageEl = document.getElementById("waitlist-message");
-
-            const email = (emailInput.value || "").trim();
-            if (!email) {
-                messageEl.textContent = "Please enter a valid email.";
-                messageEl.className = "mt-4 text-xs text-rose-400 text-center";
-                return;
-            }
-
-            // Disable while submitting
-            submitBtn.disabled = true;
-            submitBtn.classList.add("opacity-70", "cursor-not-allowed");
-            messageEl.textContent = "";
-            messageEl.className = "mt-4 text-xs text-zinc-600 text-center";
-
-            try {
-                // Send as application/x-www-form-urlencoded to avoid CORS preflight
-                const formBody = new URLSearchParams({ email, source: "LandingPage" }).toString();
-                const res = await fetch(WAITLIST_ENDPOINT, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
-                    body: formBody
-                });
-
-                if (!res.ok) throw new Error("Network response was not ok");
-                const data = await res.json().catch(() => ({}));
-
-                // Success UI
-                emailInput.value = "";
-                messageEl.textContent = data.message || "You are on the list!";
-                messageEl.className = "mt-4 text-xs text-emerald-400 text-center";
-            } catch (err) {
-                console.error(err);
-                messageEl.textContent = "Sorry, something went wrong. Please try again.";
-                messageEl.className = "mt-4 text-xs text-rose-400 text-center";
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.classList.remove("opacity-70", "cursor-not-allowed");
-            }
         }
 
     </script>
