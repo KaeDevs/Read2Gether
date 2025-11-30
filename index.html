@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Read2Gether | Sync Your Reading</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -444,9 +445,9 @@
             lastScrollY = currentScrollY;
         }
 
-        // --- 3. WAITLIST SUBMISSION TO GOOGLE SHEETS (Apps Script) ---
-        // Set this to your deployed Google Apps Script Web App URL
-        const WAITLIST_ENDPOINT = "https://script.google.com/macros/s/AKfycbwcjPY1x7QZ6dHIIQ5QE-q-X3s2C4NejP5-91sFK8QQIW6gWJCI_Jwk4A6zHlizrzc7/exec";
+        // --- 3. WAITLIST SUBMISSION TO GOOGLE SHEETS (Apps Script via Cloudflare Pages Function) ---
+        // Cloudflare Pages Function at /api/submit adds CORS headers for GitHub Pages
+        const WAITLIST_ENDPOINT = "https://e8666706.read2gether.pages.dev/api/submit";
 
         async function submitWaitlist(event) {
             event.preventDefault();
